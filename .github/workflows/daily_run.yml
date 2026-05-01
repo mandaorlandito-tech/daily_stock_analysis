@@ -37,10 +37,10 @@ jobs:
         MERGE_EMAIL_NOTIFICATION: 'true'
         ANALYSIS_DELAY: '20'
       run: |
-        python main.py --force-run
-        # === 👇 新增：把生成的报告打包成 Artifacts 👇 ===
+        python main.py --force-run--workers 1
+        
     - name: 📊 保存分析产物
-      if: always() # 无论成功失败都保存，方便我们看生成的 md 文件
+      if: always() 
       uses: actions/upload-artifact@v4
       with:
         name: stock-analysis-results
