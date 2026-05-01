@@ -35,7 +35,7 @@ jobs:
         
         # 2. 搜索模块 (针对日志第 47 行的深度“物理封锁”)
         # 这里的策略是：给足钥匙，同时把 SearXNG 的所有路全部堵死
-        SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
+        SERPAPI_API_KEYS: ${{ secrets.SERPAPI_API_KEY }}
         SERPER_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
         
         # 核心变量：强制指定供应商
