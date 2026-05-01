@@ -27,24 +27,27 @@ jobs:
 
     - name: 🚀 运行分析脚本
       env: 
-        # 1. 基础配置
+        # 1. 基础配置 (保持不变)
         STOCK_LIST: ${{ secrets.STOCK_LIST }}
         EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
         
-        # 2. 搜索模块 (针对 429 报错的专项修复)
+        # 2. 搜索模块 (针对日志报错的专项物理隔绝)
         SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
-        SERPER_API_KEY: ${{ secrets.SERPAPI_API_KEY }} # 别名备份
-        SEARCH_PROVIDER: 'serpapi'           # ⚠️ 必须！强制指定搜索商
-        ENABLE_SEARCH: 'true'                # ⚠️ 必须！强制开启搜索
+        SERPER_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
+        SEARCH_PROVIDER: 'serpapi'           # 强制指定供应商
+        SEARCH_ENGINE: 'serpapi'             # ⚠️ 补丁：适配不同版本的变量名
+        ENABLE_SEARCH: 'true'                # 显式开启
+        SEARXNG_URL: ''                      # ⚠️ 核心修正：清空公共地址，防止它去“蹭网”
+        SEARX_INSTANCES: ''                  # ⚠️ 核心修正：禁用公共实例池
         
-        # 3. DeepSeek 主引擎
+        # 3. DeepSeek 主引擎 (保持不变)
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
         OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
         
-        # 4. 数据源优先级 (efinance 置顶，解决资料缺失)
+        # 4. 数据源优先级 (保持你的优化)
         DATA_SOURCE_PRIORITY: 'efinance,akshare,tushare'
         FINANCIAL_SOURCE_PRIORITY: 'efinance,akshare,tushare'
         
@@ -52,9 +55,9 @@ jobs:
         REPORT_LANGUAGE: 'zh'
         REPORT_TYPE: 'full'
         MERGE_EMAIL_NOTIFICATION: 'true'
-        ANALYSIS_DELAY: '15' 
+        ANALYSIS_DELAY: '20'                 # 稍微增加延迟，给 SerpApi 留出响应时间
       run: |
-        # 加上 --workers 1 确保单线程稳定分析
+        # 确保单线程，防止触发搜索频率限制
         python main.py --force-run --workers 1
 
     - name: 📊 保存分析产物
