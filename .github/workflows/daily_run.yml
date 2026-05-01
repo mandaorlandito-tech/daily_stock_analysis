@@ -28,24 +28,30 @@ jobs:
 
     - name: 🚀 运行分析脚本
       env: 
-        # 基础数据源与邮件配置
+        # 1. 基础令牌 (保险箱里的钥匙)
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
         STOCK_LIST: ${{ secrets.STOCK_LIST }}
         EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-        TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
         
-        # === 核心：DeepSeek API 配置 ===
-        # 程序会自动识别 OPENAI_ 前缀并切换到 DeepSeek 引擎
+        # 2. DeepSeek 备份引擎 (当 Gemini 抽风时启用)
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
         OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
         
-        # 报告优化参数
-        REPORT_TYPE: 'full'                # 输出完整深度分析
-        MERGE_EMAIL_NOTIFICATION: 'true'   # 合并为一封精美邮件
-        ANALYSIS_DELAY: '5'                # DeepSeek 响应快，延迟设为 5 秒即可
+        # 3. === 核心：数据源优先级调优 (解决资料缺失) ===
+        # 强制让程序去爬取免费的 Akshare 和 efinance 接口
+        DATA_SOURCE_PRIORITY: 'akshare,efinance,tushare'
+        REALTIME_SOURCE_PRIORITY: 'efinance,akshare,tencent'
+        FINANCIAL_SOURCE_PRIORITY: 'akshare,efinance,tushare' # 解决“业绩预期”缺失的关键
+        
+        # 4. 报告排版与性能优化
+        REPORT_TYPE: 'full'                # 强制完整个股分析
+        MERGE_EMAIL_NOTIFICATION: 'true'   # 合并报告，防止被邮件服务器拦截
+        ANALYSIS_DELAY: '15'               # 每次分析间隔15秒，保护API不被封
       run: |
-        # 推荐使用 --workers 1 模式，让分析更有条理
+        # 使用单线程运行，确保数据抓取的稳定性
         python main.py --force-run --workers 1
         
     - name: 📊 保存分析产物
