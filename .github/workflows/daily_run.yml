@@ -33,5 +33,6 @@ jobs:
         STOCK_LIST: ${{ secrets.STOCK_LIST }}
         EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
       run: |
         python main.py --force-run
