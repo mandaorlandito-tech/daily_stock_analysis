@@ -37,7 +37,7 @@ jobs:
         MERGE_EMAIL_NOTIFICATION: 'true'
         ANALYSIS_DELAY: '20'
       run: |
-        python main.py --force-run--workers 1
+        python main.py --force-run --workers 1
         
     - name: 📊 保存分析产物
       if: always() 
