@@ -22,37 +22,39 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        # ⚠️ 修正点 1：强制升级 akshare，这是解决“财务数据缺失”的物理前提
-        pip install akshare --upgrade 
+        # 强制升级核心抓取库，确保接口不失效
+        pip install akshare efinance --upgrade 
 
     - name: 🚀 运行分析脚本
       env: 
-        # 基础配置
+        # 1. 基础配置
         STOCK_LIST: ${{ secrets.STOCK_LIST }}
         EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
         
-        # ⚠️ 修正点 2：配置 SerpApi 搜索增强 (你刚申请的钥匙)
+        # 2. 搜索模块 (针对 429 报错的专项修复)
         SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
+        SERPER_API_KEY: ${{ secrets.SERPAPI_API_KEY }} # 别名备份
+        SEARCH_PROVIDER: 'serpapi'           # ⚠️ 必须！强制指定搜索商
+        ENABLE_SEARCH: 'true'                # ⚠️ 必须！强制开启搜索
         
-        # DeepSeek API 配置
+        # 3. DeepSeek 主引擎
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
         OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
         
-        # ⚠️ 修正点 3：数据源优先级 (强制先薅免费的 Akshare 羊毛)
-        DATA_SOURCE_PRIORITY: 'akshare,efinance,tushare'
-        FINANCIAL_SOURCE_PRIORITY: 'akshare,efinance,tushare'
+        # 4. 数据源优先级 (efinance 置顶，解决资料缺失)
+        DATA_SOURCE_PRIORITY: 'efinance,akshare,tushare'
+        FINANCIAL_SOURCE_PRIORITY: 'efinance,akshare,tushare'
         
-        # ⚠️ 修正点 4：语言设定 (确保搜索和报告都是纯中文)
+        # 5. 报告产出控制
         REPORT_LANGUAGE: 'zh'
-        
-        # 报告优化参数
         REPORT_TYPE: 'full'
         MERGE_EMAIL_NOTIFICATION: 'true'
-        ANALYSIS_DELAY: '15' # 建议设为 15，给搜索和爬虫留出安全时间
+        ANALYSIS_DELAY: '15' 
       run: |
+        # 加上 --workers 1 确保单线程稳定分析
         python main.py --force-run --workers 1
 
     - name: 📊 保存分析产物
