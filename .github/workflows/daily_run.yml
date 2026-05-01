@@ -27,42 +27,46 @@ jobs:
 
     - name: 🚀 运行分析脚本
       env: 
-        # 1. 基础配置
+        # 1. 基础数据
         STOCK_LIST: ${{ secrets.STOCK_LIST }}
         EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
         
-        # 2. 搜索模块 (针对日志报错的“核弹级”修复)
-        # 无论脚本认哪个名字，我们全给它堵上！
+        # 2. 搜索模块 (针对日志第 47 行的深度“物理封锁”)
+        # 这里的策略是：给足钥匙，同时把 SearXNG 的所有路全部堵死
         SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
         SERPER_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
-        SERP_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
         
-        # 强制切换驱动，并清空所有 SearXNG 的 fallback 路径
-        SEARCH_PROVIDER: 'serpapi'
-        SEARCH_ENGINE: 'serpapi'
-        NEWS_SEARCH_ENGINE: 'serpapi'
-        ENABLE_SEARCH: 'true'
-        SEARXNG_URL: 'disabled'              # ⚠️ 强行写死，让它找不到 SearXNG
-        SEARX_INSTANCES: '[]'                # ⚠️ 清空实例池
+        # 核心变量：强制指定供应商
+        SEARCH_PROVIDER: 'serpapi'           # 强制指定供应商
+        SEARCH_ENGINE: 'serpapi'             # 适配不同脚本版本
+        NEWS_SEARCH_SOURCE: 'serpapi'         # 适配不同脚本版本
         
-        # 3. DeepSeek 主引擎
+        # 核心屏蔽：让脚本彻底找不到 SearXNG 的地址
+        ENABLE_SEARCH: 'true'                # 显式开启
+        USE_SEARXNG: 'false'                 # 强制禁用公共搜索
+        SEARXNG_URL: ''                      # 清空地址
+        SEARX_INSTANCES: ''                  # 清空池子
+        
+        # 3. DeepSeek 大脑
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
         OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
         
-        # 4. 数据源优先级
+        # 4. 数据源优先级 (efinance 抓财报最稳)
         DATA_SOURCE_PRIORITY: 'efinance,akshare,tushare'
         FINANCIAL_SOURCE_PRIORITY: 'efinance,akshare,tushare'
         
-        # 5. 报告控制
+        # 5. 产出控制
         REPORT_LANGUAGE: 'zh'
         REPORT_TYPE: 'full'
         MERGE_EMAIL_NOTIFICATION: 'true'
         ANALYSIS_DELAY: '20' 
       run: |
+        # 确保单线程，防止并发冲突
         python main.py --force-run --workers 1
+        
     - name: 📊 保存分析产物
       if: always() 
       uses: actions/upload-artifact@v4
