@@ -28,12 +28,10 @@ jobs:
 
     - name: 🚀 运行分析脚本
       env: 
-      # 这里将保险箱(Secrets)里的钥匙，映射给程序使用
-      # 等号左边是程序读取的变量名，右边是你在第二步填写的 Secret 名称
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      STOCK_LIST: ${{ secrets.STOCK_LIST }}
-      EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
-      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-      # TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}  # 如果有其他Key，取消这行注释并对应修改
+        # 这里将保险箱(Secrets)里的钥匙，映射给程序使用
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        STOCK_LIST: ${{ secrets.STOCK_LIST }}
+        EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
       run: |
-      python main.py --force-run
+        python main.py --force-run
