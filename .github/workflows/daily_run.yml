@@ -36,3 +36,13 @@ jobs:
         TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
       run: |
         python main.py --force-run --report-type full
+        # === 👇 新增：把生成的报告打包成 Artifacts 👇 ===
+    - name: 📊 保存分析产物
+      if: always() # 无论成功失败都保存，方便我们看生成的 md 文件
+      uses: actions/upload-artifact@v4
+      with:
+        name: stock-analysis-results
+        path: |
+          *.md
+          output/
+          logs/
