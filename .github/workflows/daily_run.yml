@@ -28,12 +28,14 @@ jobs:
 
     - name: 🚀 运行分析脚本
       env: 
-        # 这里将保险箱(Secrets)里的钥匙，映射给程序使用
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         STOCK_LIST: ${{ secrets.STOCK_LIST }}
         EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
+        REPORT_TYPE: 'full'
+        MERGE_EMAIL_NOTIFICATION: 'true'
+        ANALYSIS_DELAY: '20'
       run: |
         python main.py --force-run
         # === 👇 新增：把生成的报告打包成 Artifacts 👇 ===
