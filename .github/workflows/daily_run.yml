@@ -35,7 +35,7 @@ jobs:
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
       run: |
-        python main.py --force-run --report-type full
+        python main.py --force-run
         # === 👇 新增：把生成的报告打包成 Artifacts 👇 ===
     - name: 📊 保存分析产物
       if: always() # 无论成功失败都保存，方便我们看生成的 md 文件
