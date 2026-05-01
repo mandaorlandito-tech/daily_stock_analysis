@@ -28,15 +28,24 @@ jobs:
 
     - name: 🚀 运行分析脚本
       env: 
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        # 基础数据源与邮件配置
         STOCK_LIST: ${{ secrets.STOCK_LIST }}
         EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
-        REPORT_TYPE: 'full'
-        MERGE_EMAIL_NOTIFICATION: 'true'
-        ANALYSIS_DELAY: '20'
+        
+        # === 核心：DeepSeek API 配置 ===
+        # 程序会自动识别 OPENAI_ 前缀并切换到 DeepSeek 引擎
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+        OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+        
+        # 报告优化参数
+        REPORT_TYPE: 'full'                # 输出完整深度分析
+        MERGE_EMAIL_NOTIFICATION: 'true'   # 合并为一封精美邮件
+        ANALYSIS_DELAY: '5'                # DeepSeek 响应快，延迟设为 5 秒即可
       run: |
+        # 推荐使用 --workers 1 模式，让分析更有条理
         python main.py --force-run --workers 1
         
     - name: 📊 保存分析产物
